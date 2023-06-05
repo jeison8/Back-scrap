@@ -3,12 +3,12 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
-# Visual Studio Code
+# IDE - VSCode
 .vscode/*
-.vscode/settings.json
-.vscode/tasks.json
-.vscode/launch.json
-.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 .history/*
 
 # Archivos generados por herramientas de construcción
@@ -24,3 +24,5 @@ logs/
 *.swp
 *.swo
 .DS_Store
+.vscode/settings.json
+.vscode/extensions.json
