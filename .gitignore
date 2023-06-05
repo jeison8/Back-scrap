@@ -1,10 +1,12 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
 # Dependencias y módulos de Node.js
 node_modules/
 npm-debug.log
 yarn-error.log
 
 # IDE - VSCode
-.vscode/*
+.vscode/**
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -24,5 +26,3 @@ logs/
 *.swp
 *.swo
 .DS_Store
-.vscode/settings.json
-.vscode/extensions.json
