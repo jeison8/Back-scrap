@@ -6,12 +6,7 @@ npm-debug.log
 yarn-error.log
 
 # IDE - VSCode
-.vscode/**
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
+.vscode/*
 
 # Archivos generados por herramientas de construcción
 dist/
