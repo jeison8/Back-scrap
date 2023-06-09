@@ -13,4 +13,10 @@ app.use('/api/scrap', require('./routes/scrap'));
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`);
+    onServerStart();
 });
+
+const onServerStart = () => {
+    const { clean } = require('./controllers/auth');
+    clean(); 
+};

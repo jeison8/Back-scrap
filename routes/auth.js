@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
-const { createUser,updateUser,login,reValidateToken,consult,destroy,access } = require('../controllers/auth');
+const { createUser,updateUser,login,reValidateToken,consult,destroy,access,clean } = require('../controllers/auth');
 const { validateFields } = require('../middlewares/field-validators');
 const { validateJwt } = require('../middlewares/validate-jwt');
 
@@ -43,5 +43,7 @@ router.get('/destroy/:id',[
 router.get('/renew', [ 
     validateJwt 
 ], reValidateToken);
+
+router.get('/clean', clean);
 
 module.exports = router;

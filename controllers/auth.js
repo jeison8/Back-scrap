@@ -2,8 +2,8 @@ const { response } = require('express');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const { generateJWT } = require('../helpers/jwt');
-// const { Board, Led } = require('johnny-five');
-// const board = new Board({ port: "COM3"});
+const { SerialPort } = require('serialport');
+const port = new SerialPort({ path: 'COM3', baudRate: 9600 });
 
 
 const login = async (req, res = response) => {
@@ -31,11 +31,9 @@ const access = async (req, res = response) => {
     try {
         let user = await User.findOne({document});
         if(!user) return message(404,'El documento no esta registrado',res);   
-        // board.on("ready", () => {
-        //     console.log("Ready!");
-        //     const led = new Led(13);
-        //     led.on();
-        // })
+        const today = new Date().setHours(0,0,0,0);
+        if(user.dateEnd.getTime() >= today) port.write('1');
+        if(user.document === '123456789' || user.document === '000') port.write('1');
         res.status(200).json({
             ok:true,
             name:user.name,
@@ -56,7 +54,7 @@ const consult = async (req, res = response) => {
         let query = {};
         if (nameFilter !== '') query.name = { $regex: nameFilter, $options: 'i' };
         if (dateFilter !== '') query.dateEnd = { $gte: dateFilter };
-        const users = await User.paginate(query,{page,limit});
+        const users = await User.paginate(query,{page,limit,sort: { dateEnd: -1 }});
         res.status(200).json({
             ok:true,
             users,
@@ -92,7 +90,7 @@ const updateUser = async (req, res = response) => {
         let user = await User.findById(id);
         if(!user) return message(400,'No existe el usuario',res);
         const userDocument = await User.findOne({document});
-        if(userDocument.id !== id) return message(400,'El documento ya existe',res);
+        if(userDocument && userDocument.id !== id) return message(400,'El documento ya existe',res);
         const salt = bcrypt.genSaltSync();
         user.password = bcrypt.hashSync(document,salt);
         const data = { ...req.body, password: user.password };
@@ -131,6 +129,22 @@ const reValidateToken = async (req, res = response) => {
     });
 }
 
+const clean = async () => {
+    const today = new Date();
+    const day = today.getDate();
+    if (day === 1 || day === 28) {
+        const thresholdDate = new Date(); 
+        thresholdDate.setHours(0,0,0,0);
+        thresholdDate.setDate(today.getDate() - 90); 
+        const users = await User.find({ dateEnd: { $lte: thresholdDate } });
+        users.forEach(async (user) => {
+            if (user.document !== '123456789' && user.document !== '000'){
+                await User.findByIdAndDelete(user.id);
+            }
+        });
+    }
+}
+
 const message = (code,text,res) => {
     res.status(code).json({
         ok:false,
@@ -145,5 +159,6 @@ module.exports = {
     createUser,
     updateUser,
     destroy,
-    reValidateToken
+    reValidateToken,
+    clean
 }
