@@ -30,7 +30,7 @@ const access = async (req, res = response) => {
     const { document } = req.body;
     try {
         let user = await User.findOne({document});
-        if(!user) return message(404,'El documento no esta registrado',res);   
+        if(!user) return message(404,'La clave de ingreso es incorrecta',res);   
         const today = new Date().setHours(0,0,0,0);
         if(user.dateEnd.getTime() >= today) port.write('1');
         if(user.document === '123456789' || user.document === '000') port.write('1');
@@ -54,7 +54,7 @@ const consult = async (req, res = response) => {
         let query = {};
         if (nameFilter !== '') query.name = { $regex: nameFilter, $options: 'i' };
         if (dateFilter !== '') query.dateEnd = { $gte: dateFilter };
-        const users = await User.paginate(query,{page,limit,sort: { dateEnd: -1 }});
+        const users = await User.paginate(query,{page,limit,sort: { dateEnd: 1 }});
         res.status(200).json({
             ok:true,
             users,
